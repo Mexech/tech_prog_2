@@ -7,6 +7,17 @@ CyclicList::CyclicList() {
     tail = NULL;
 }
 
+CyclicList::~CyclicList() {
+    if (!isEmpty()) {
+        Node *tmp = head;
+        Node *next_node;
+        do {
+            next_node = tmp->next;
+            delete tmp;
+        } while (tmp = next_node, tmp != head);
+    }
+}
+
 void CyclicList::push(int val) {
     Node *tmp = new Node;
     tmp->data = val;
@@ -15,14 +26,13 @@ void CyclicList::push(int val) {
     if (isEmpty()) {
         head = tmp;
         tail = tmp;
-    } else {
-        tail->next = tmp;
-        tail = tail->next;
-    }
+    } 
+    tail->next = tmp;
+    tail = tail->next;
 }
 
 int CyclicList::pop() {
-    if (isEmpty())
+    if (isEmpty()) 
         throw out_of_range("empty");
 
     Node *tmp = head;
@@ -39,8 +49,10 @@ int CyclicList::pop() {
 }
 
 void CyclicList::display() {
-    if (isEmpty())
-        throw out_of_range("empty");
+    if (isEmpty()) {
+        printf("List is empty\n");
+        return;
+    }
     Node *tmp = head;
     do 
         printf("%d ", tmp->data);
@@ -52,17 +64,52 @@ bool CyclicList::isEmpty() {
     return head == NULL;
 }
 
-int main() {
+CyclicList CyclicList::copy() {
     CyclicList c;
-    c.push(1);
-    c.push(2);
-    c.push(3);
-    c.display();
+    if (isEmpty())
+        return c;
+    Node *tmp = head;
+    do
+        c.push(tmp->data);
+    while (tmp = tmp->next, tmp != head);
+    return c;
+}
+
+CyclicList CyclicList::operator++() {
+    int val;
+    printf("Type one value:\n>> ");
+    scanf("%d", &val);
+    push(val);
+    return copy();
+}
+
+CyclicList CyclicList::operator++(int) {
+    int val1, val2;
+    printf("Type two values separated by space:\n>> ");
+    scanf("%d %d", &val1, &val2);
+    push(val1); push(val2);
+    return copy();
+}
+
+CyclicList operator--(CyclicList& c) {
+    if (c.isEmpty()) {
+        CyclicList res;
+        return res;
+    }
+    printf("Head is %d\n", c.head->data);
     c.pop();
-    c.display();
-    c.pop();
-    c.display();
-    c.pop();
-    c.display();
-    return 0;
+    return c.copy();
+}
+
+CyclicList operator--(CyclicList& c, int) {
+    if (c.isEmpty()) {
+        CyclicList res;
+        return res;
+    } 
+    printf("Head is %d; ", c.head->data);
+    printf("Next is %d\n", c.head->next->data);
+    try {
+        c.pop(); c.pop();
+    } catch(out_of_range) {}
+    return c.copy();
 }
