@@ -25,5 +25,5 @@ class Dims {
         friend Dims operator/(const float, const Dims&);
     protected:
     private:
-        float h = 0, w = 0, d = 0;
+        float h, w, d;
 };
